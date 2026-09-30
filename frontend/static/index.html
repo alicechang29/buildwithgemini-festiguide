@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>FestiGuide Mobile</title>
+<link rel="manifest" href="/manifest.json">
+
+<!-- Google Font & Icons -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined">
+<!-- Leaflet CSS for real maps -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<style>
+  :root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --bg-dark: #000000;
+    --sidebar-bg: #0b0f19;
+    --card-bg: rgba(22, 27, 46, 0.7);
+    --border: rgba(255, 255, 255, 0.08);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  /* Background staging area for iPhone Device Preview */
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+    background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #090d16 60%, #030712 100%);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px 0;
+    overflow: hidden;
+  }
+
+  /* Authentic iPhone 15 Pro Titanium Chassis */
+  .iphone-frame {
+    position: relative;
+    width: 402px;
+    height: 835px;
+    background: #000;
+    border-radius: 54px;
+    box-shadow: 
+      0 0 0 4px #2b2b2f,
+      0 0 0 7px #1c1b20,
+      0 0 0 9px #403e48,
+      0 25px 60px rgba(0, 0, 0, 0.85),
+      0 10px 25px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Physical Side Buttons */
+  .iphone-button-action {
+    position: absolute;
+    top: 110px;
+    left: -12px;
+    width: 4px;
+    height: 28px;
+    background: #3a3842;
+    border-radius: 3px 0 0 3px;
+  }
+  .iphone-button-vol-up {
+    position: absolute;
+    top: 155px;
+    left: -12px;
+    width: 4px;
+    height: 50px;
+    background: #3a3842;
+    border-radius: 3px 0 0 3px;
+  }
+  .iphone-button-vol-down {
+    position: absolute;
+    top: 220px;
+    left: -12px;
+    width: 4px;
+    height: 50px;
+    background: #3a3842;
+    border-radius: 3px 0 0 3px;
+  }
+  .iphone-button-power {
+    position: absolute;
+    top: 175px;
+    right: -12px;
+    width: 4px;
+    height: 75px;
+    background: #3a3842;
+    border-radius: 0 3px 3px 0;
+  }
+
+  /* iPhone Dynamic Island & Status Bar */
+  .iphone-status-bar {
+    height: 44px;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #fff;
+    z-index: 2000;
+    user-select: none;
+    position: relative;
+  }
+
+  .dynamic-island {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 10px;
+    width: 122px;
+    height: 34px;
+    background: #000;
+    border-radius: 20px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+    z-index: 2001;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .island-cam {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #090e17;
+    border: 1px solid #16243b;
+    position: absolute;
+    right: 14px;
+  }
+  .island-sensor {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0f1015;
+    position: absolute;
+    left: 16px;
+  }
+
+  .status-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+  }
+
+  /* Top App Navigation Header */
+  .mobile-header {
+    background: rgba(11, 15, 25, 0.98);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    z-index: 1000;
+  }
+
+  .header-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.15rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #a5b4fc, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .festival-selectors {
+    display: flex;
+    gap: 0.45rem;
+    width: 100%;
+  }
+
+  select {
+    font-family: inherit;
+    font-size: 0.78rem;
+    border-radius: 8px;
+    padding: 0.45rem 0.6rem;
+    outline: none;
+    cursor: pointer;
+    background: rgba(26, 32, 53, 0.95);
+    border: 1px solid var(--border);
+    color: #fff;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Screens Viewport */
+  .screens-viewport {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #050811;
+  }
+
+  .mobile-screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    background: #050811;
+  }
+  .mobile-screen.active {
+    display: flex;
+  }
+
+  /* Screen 1: Map Screen */
+  #screenMap {
+    height: 100%;
+    position: relative;
+  }
+  #map {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .map-floating-pill {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    z-index: 500;
+    background: rgba(11, 15, 25, 0.92);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0.45rem 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.74rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  }
+
+  .layer-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    color: #cbd5e1;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .layer-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  /* Screen 2: Timeline Screen */
+  .screen-padding {
+    padding: 0.85rem 0.85rem 5.5rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .weather-banner {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(99, 102, 241, 0.18));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
+    padding: 0.7rem 0.85rem;
+    font-size: 0.76rem;
+    line-height: 1.45;
+  }
+
+  .schedule-item {
+    background: rgba(17, 24, 39, 0.85);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.8rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border-left: 4px solid #6366f1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .schedule-item.must_see { border-left-color: #ef4444; }
+  .schedule-item.discovery { border-left-color: #10b981; }
+
+  .act-actions {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+    padding-top: 0.35rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .act-btn {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--border);
+    color: #cbd5e1;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.3rem 0.55rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    flex: 1;
+    justify-content: center;
+  }
+  .act-btn:active {
+    background: rgba(99, 102, 241, 0.3);
+    color: #fff;
+  }
+
+  .transit-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px dashed rgba(245, 158, 11, 0.4);
+    border-radius: 10px;
+    font-size: 0.72rem;
+    color: #fcd34d;
+  }
+
+  .break-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.7rem 0.85rem;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 12px;
+    font-size: 0.74rem;
+    color: #6ee7b7;
+  }
+
+  /* Screen 4: Profile & Preferences */
+  .pref-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+  .pref-field label {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .pref-field select {
+    width: 100%;
+  }
+
+  textarea {
+    width: 100%;
+    height: 70px;
+    background: rgba(17, 24, 39, 0.85);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.55rem;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.78rem;
+    resize: none;
+    outline: none;
+  }
+
+  .chip {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #c7d2fe;
+    font-size: 0.7rem;
+    padding: 0.22rem 0.5rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  /* Floating Media Player in Mobile Frame */
+  .mobile-audio-player {
+    position: absolute;
+    bottom: 78px;
+    left: 12px;
+    right: 12px;
+    z-index: 900;
+    background: rgba(11, 15, 25, 0.98);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(129, 140, 248, 0.4);
+    border-radius: 14px;
+    padding: 0.55rem 0.8rem;
+    display: none;
+    align-items: center;
+    gap: 0.7rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+  }
+  .player-artwork {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  /* Bottom Navigation Bar */
+  .bottom-nav {
+    height: 58px;
+    background: rgba(11, 15, 25, 0.98);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 1000;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.65rem;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.15s;
+    flex: 1;
+    padding: 0.25rem 0;
+  }
+  .nav-item.active {
+    color: #818cf8;
+  }
+  .nav-item .material-symbols-outlined {
+    font-size: 1.35rem;
+  }
+
+  /* iPhone Home Indicator Bar */
+  .iphone-home-indicator {
+    height: 22px;
+    background: rgba(11, 15, 25, 0.98);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+  }
+  .home-bar {
+    width: 136px;
+    height: 4.5px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 10px;
+  }
+
+  /* Alternative Act Sheet */
+  #swapOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 2100;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .swap-sheet {
+    background: #0f172a;
+    border-top: 1px solid var(--border);
+    border-radius: 22px 22px 0 0;
+    padding: 1.25rem 1rem 2rem 1rem;
+    max-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+  }
+  .swap-list {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    max-height: 52vh;
+  }
+  .swap-item {
+    background: rgba(26, 32, 53, 0.6);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.65rem 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .swap-item:active {
+    background: rgba(99, 102, 241, 0.25);
+  }
+
+  /* Poster Modal */
+  #posterOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+  .poster-card {
+    background: linear-gradient(135deg, #1e1b4b, #311042);
+    border: 2px solid rgba(192, 132, 252, 0.5);
+    border-radius: 20px;
+    padding: 1.5rem 1.2rem;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  .custom-stage-marker {
+    background: #6366f1;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    color: white;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 14px rgba(0,0,0,0.6);
+  }
+  .custom-stage-marker.must_see { background: #ef4444; }
+  .custom-stage-marker.discovery { background: #10b981; }
+</style>
+</head>
+<body>
+
+<!-- Physical iPhone Device Frame -->
+<div class="iphone-frame">
+  <!-- Hardware Buttons -->
+  <div class="iphone-button-action"></div>
+  <div class="iphone-button-vol-up"></div>
+  <div class="iphone-button-vol-down"></div>
+  <div class="iphone-button-power"></div>
+
+  <!-- iOS Status Bar & Dynamic Island -->
+  <div class="iphone-status-bar">
+    <span id="iosClock">9:41</span>
+    
+    <div class="dynamic-island">
+      <div class="island-sensor"></div>
+      <div class="island-cam"></div>
+    </div>
+
+    <div class="status-icons">
+      <span class="material-symbols-outlined" style="font-size: 15px;">signal_cellular_4_bar</span>
+      <span class="material-symbols-outlined" style="font-size: 15px;">wifi</span>
+      <span class="material-symbols-outlined" style="font-size: 16px;">battery_5_bar</span>
+    </div>
+  </div>
+
+  <!-- FestiGuide Header Inside iPhone -->
+  <header class="mobile-header">
+    <div class="header-top-row">
+      <div class="brand">
+        <span class="material-symbols-outlined" style="font-size: 1.3rem; color: #818cf8;">festival</span>
+        FestiGuide
+      </div>
+      <div style="display: flex; gap: 0.35rem;">
+        <button class="act-btn" onclick="showPoster()" style="padding: 0.25rem 0.5rem; color: #c084fc;">
+          <span class="material-symbols-outlined" style="font-size: 14px;">image</span>
+          Poster
+        </button>
+        <button class="act-btn" id="btnOptimize" onclick="generateSchedule()" style="background: var(--primary); color: #fff; border-color: var(--primary); padding: 0.25rem 0.6rem;">
+          <span class="material-symbols-outlined" style="font-size: 14px;">auto_awesome</span>
+          <span id="btnOptimizeText">Optimize</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Festival and Day Switchers -->
+    <div class="festival-selectors">
+      <select id="festivalSelect" onchange="onFestivalChange()">
+        <option value="capitol_hill_block_party_2026">Capitol Hill Block Party (Seattle)</option>
+        <option value="coachella_2026">Coachella (Indio, CA)</option>
+        <option value="outside_lands_2026">Outside Lands (SF)</option>
+        <option value="lollapalooza_2026">Lollapalooza (Chicago)</option>
+      </select>
+      <select id="daySelect" onchange="generateSchedule()" style="max-width: 130px;">
+        <option value="Friday (Day 1)">Friday (Day 1)</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Screens Viewport -->
+  <div class="screens-viewport">
+    <!-- SCREEN 1: MAP -->
+    <div class="mobile-screen active" id="screenMap">
+      <div class="map-floating-pill">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="display: flex; align-items: center; gap: 0.2rem;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>Favorite</span>
+          <span style="display: flex; align-items: center; gap: 0.2rem;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;"></span>Discovery</span>
+        </div>
+        <div class="layer-toggle">
+          <button class="layer-btn active" id="btnStreet" onclick="switchMapLayer('street')">Streets</button>
+          <button class="layer-btn" id="btnSat" onclick="switchMapLayer('satellite')">Sat</button>
+        </div>
+      </div>
+      <div id="map"></div>
+    </div>
+
+    <!-- SCREEN 2: TIMELINE & ITINERARY -->
+    <div class="mobile-screen" id="screenTimeline">
+      <div class="screen-padding">
+        <div class="weather-banner" id="weatherBox">
+          <div style="font-weight: 700; color: #93c5fd; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.3rem;">
+            <span class="material-symbols-outlined" style="font-size: 1rem;">wb_sunny</span>
+            Weather & Conditions
+          </div>
+          <div id="weatherContent" style="color: #cbd5e1;">Generating conditions...</div>
+        </div>
+
+        <div id="timelineList" style="display: flex; flex-direction: column; gap: 0.65rem;"></div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: DISCOVERY GEMS -->
+    <div class="mobile-screen" id="screenDiscovery">
+      <div class="screen-padding">
+        <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">
+          Artists on this festival day matching your music taste:
+        </div>
+        <div id="discoveryCardsList" style="display: flex; flex-direction: column; gap: 0.65rem;"></div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: PROFILE & MUSIC MEMORY -->
+    <div class="mobile-screen" id="screenProfile">
+      <div class="screen-padding">
+        <div style="font-weight: 700; font-size: 0.88rem; color: #fff; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+          <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #818cf8;">psychology</span>
+          Festival Preferences & Memory
+        </div>
+
+        <div style="background: rgba(26, 32, 53, 0.6); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem;">
+          <div class="pref-field">
+            <label for="walkingPace">Walking Pace:</label>
+            <select id="walkingPace" onchange="onPreferenceChange()">
+              <option value="Speedy">Speedy (Tight transitions, max sets)</option>
+              <option value="Moderate" selected>Moderate (Standard buffers)</option>
+              <option value="Leisurely">Leisurely (Generous breaks & rest)</option>
+            </select>
+          </div>
+
+          <div class="pref-field" style="margin-bottom: 0;">
+            <label for="dietPref">Diet & Rest Style:</label>
+            <select id="dietPref" onchange="onPreferenceChange()">
+              <option value="Casual & Quick Bites" selected>Casual Food Trucks (20m)</option>
+              <option value="Sit-down & Shaded Meals">Sit-Down Shaded Meals (45m)</option>
+              <option value="Drinks & Light Snacks">Beverages & Hydration (15m)</option>
+            </select>
+          </div>
+          <div id="prefSaveNotice" style="font-size: 0.7rem; color: #10b981; display: none; margin-top: 0.4rem;">
+            ✓ Saved & schedule updated!
+          </div>
+        </div>
+
+        <div style="font-weight: 700; font-size: 0.82rem; color: #fff; margin-top: 0.4rem;">Input Playlists / New Artists</div>
+        <textarea id="customArtistsInput" placeholder="Paste artist names, e.g. Leon Bridges, Kaytranada, SZA..."></textarea>
+        <button class="act-btn" style="background: var(--primary); color: #fff;" onclick="saveCustomArtists()">
+          + Sync with Profile Memory
+        </button>
+
+        <div style="font-weight: 700; font-size: 0.82rem; color: #fff; margin-top: 0.4rem;">Liked Artists Memory Cloud</div>
+        <div class="artist-chips" id="topArtistsList" style="display: flex; flex-wrap: wrap; gap: 0.3rem; max-height: 110px; overflow-y: auto;"></div>
+
+        <div style="font-weight: 700; font-size: 0.82rem; color: #fff; margin-top: 0.4rem;">Top Taste Genres</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.3rem;" id="topGenresList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Audio Preview Player -->
+  <div class="mobile-audio-player" id="audioPlayerCard">
+    <img id="playerArt" class="player-artwork" src="" alt="Album Art">
+    <div style="flex: 1; min-width: 0;">
+      <strong id="playerTitle" style="display: block; font-size: 0.8rem; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Song Title</strong>
+      <span id="playerArtist" style="display: block; font-size: 0.7rem; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Artist</span>
+    </div>
+    <audio id="audioElem" controls style="height: 30px; width: 100px; outline: none;"></audio>
+    <button class="act-btn" onclick="closeAudioPlayer()" style="flex: none; padding: 0.3rem;">✕</button>
+  </div>
+
+  <!-- iOS Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchScreen('map')">
+      <span class="material-symbols-outlined">map</span>
+      <span>Map</span>
+    </button>
+    <button class="nav-item" onclick="switchScreen('timeline')">
+      <span class="material-symbols-outlined">schedule</span>
+      <span>Timeline</span>
+    </button>
+    <button class="nav-item" onclick="switchScreen('discovery')">
+      <span class="material-symbols-outlined">explore</span>
+      <span>Discovery</span>
+    </button>
+    <button class="nav-item" onclick="switchScreen('profile')">
+      <span class="material-symbols-outlined">person</span>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+  <!-- iPhone Home Indicator Bar -->
+  <div class="iphone-home-indicator">
+    <div class="home-bar"></div>
+  </div>
+
+  <!-- Alternative Artist Bottom Sheet -->
+  <div id="swapOverlay">
+    <div class="swap-sheet">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <strong style="font-size: 0.95rem; color: #fff;">Choose Alternative Artist</strong>
+        <button class="act-btn" onclick="closeSwapModal()" style="flex: none; padding: 0.3rem 0.55rem;">✕</button>
+      </div>
+      <div id="swapSubtitle" style="font-size: 0.74rem; color: var(--text-muted);">
+        Select an alternative act:
+      </div>
+      <div class="swap-list" id="swapCandidateList"></div>
+    </div>
+  </div>
+
+  <!-- Poster Modal -->
+  <div id="posterOverlay">
+    <div class="poster-card">
+      <div style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: #c084fc; font-weight: 800; margin-bottom: 0.35rem;">
+        Personalized Festival Lineup
+      </div>
+      <h2 id="posterFestName" style="font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 0.85rem;">
+        FESTIGUIDE 2026
+      </h2>
+      
+      <div style="font-size: 0.66rem; color: #94a3b8; margin-bottom: 0.25rem;">HEADLINERS</div>
+      <div id="posterHeadliners" style="font-size: 0.92rem; font-weight: 800; color: #f8fafc; margin-bottom: 0.75rem; line-height: 1.4;">
+        ANDERSON .PAAK • BIG WILD • LAKE STREET DIVE
+      </div>
+
+      <div style="font-size: 0.66rem; color: #94a3b8; margin-bottom: 0.25rem;">DISCOVERY ACTS</div>
+      <div id="posterUndercard" style="font-size: 0.78rem; font-weight: 600; color: #cbd5e1; margin-bottom: 1rem; line-height: 1.45;">
+        THE CALIFORNIA HONEYDROPS • BERLIOZ • JOEY PECORARO • FLAMINGOSIS
+      </div>
+
+      <button class="act-btn" style="background: var(--primary); color: #fff; margin: 0 auto; padding: 0.45rem 1.15rem;" onclick="hidePoster()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Dynamic iOS Clock
+function updateClock() {
+  const now = new Date();
+  const hrs = now.getHours();
+  const mins = String(now.getMinutes()).padStart(2, '0');
+  const clock = document.getElementById('iosClock');
+  if (clock) clock.textContent = `${hrs}:${mins}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+let currentScheduleData = null;
+let allFestivalsData = [];
+let leafletMap = null;
+let mapLayers = {};
+let currentLayerName = 'street';
+let markersLayer = null;
+let routePolylines = [];
+let targetSwapIndex = null;
+
+function initMap() {
+  leafletMap = L.map('map', {
+    zoomControl: false,
+    attributionControl: false
+  }).setView([47.6143, -122.3195], 17);
+
+  L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
+
+  mapLayers['street'] = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(leafletMap);
+
+  mapLayers['satellite'] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    attribution: '&copy; Esri'
+  });
+
+  markersLayer = L.layerGroup().addTo(leafletMap);
+}
+
+function switchMapLayer(name) {
+  if (name === currentLayerName) return;
+  leafletMap.removeLayer(mapLayers[currentLayerName]);
+  mapLayers[name].addTo(leafletMap);
+  currentLayerName = name;
+  document.getElementById("btnStreet").classList.toggle("active", name === 'street');
+  document.getElementById("btnSat").classList.toggle("active", name === 'satellite');
+}
+
+function switchScreen(screenName) {
+  document.querySelectorAll('.mobile-screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  if (screenName === 'map') {
+    document.getElementById('screenMap').classList.add('active');
+    document.querySelectorAll('.nav-item')[0].classList.add('active');
+    if (leafletMap) {
+      setTimeout(() => leafletMap.invalidateSize(), 150);
+    }
+  } else if (screenName === 'timeline') {
+    document.getElementById('screenTimeline').classList.add('active');
+    document.querySelectorAll('.nav-item')[1].classList.add('active');
+  } else if (screenName === 'discovery') {
+    document.getElementById('screenDiscovery').classList.add('active');
+    document.querySelectorAll('.nav-item')[2].classList.add('active');
+  } else if (screenName === 'profile') {
+    document.getElementById('screenProfile').classList.add('active');
+    document.querySelectorAll('.nav-item')[3].classList.add('active');
+  }
+}
+
+function showPoster() {
+  if (currentScheduleData) {
+    document.getElementById("posterFestName").textContent = `${currentScheduleData.festival.name.toUpperCase()} (${currentScheduleData.selected_day})`;
+  }
+  document.getElementById("posterOverlay").style.display = "flex";
+}
+function hidePoster() {
+  document.getElementById("posterOverlay").style.display = "none";
+}
+
+async function loadFestivalsMetadata() {
+  try {
+    const res = await fetch("/api/festivals");
+    allFestivalsData = await res.json();
+    populateDaysDropdown();
+  } catch (e) {
+    console.error("Error loading festivals:", e);
+  }
+}
+
+function onFestivalChange() {
+  populateDaysDropdown();
+  generateSchedule();
+}
+
+function populateDaysDropdown() {
+  const festId = document.getElementById("festivalSelect").value;
+  const fest = allFestivalsData.find(f => f.id === festId);
+  const daySelect = document.getElementById("daySelect");
+  
+  if (fest && fest.days && fest.days.length) {
+    daySelect.innerHTML = fest.days.map(d => `<option value="${d}">${d}</option>`).join("");
+  } else {
+    daySelect.innerHTML = `<option value="Friday (Day 1)">Friday (Day 1)</option><option value="Saturday (Day 2)">Saturday (Day 2)</option><option value="Sunday (Day 3)">Sunday (Day 3)</option>`;
+  }
+}
+
+async function loadUserProfile() {
+  try {
+    const res = await fetch("/api/user-profile?user_id=alicechang94");
+    const data = await res.json();
+    
+    if (data.walking_pace) document.getElementById("walkingPace").value = data.walking_pace;
+    if (data.diet_pref) document.getElementById("dietPref").value = data.diet_pref;
+
+    const artistsDiv = document.getElementById("topArtistsList");
+    artistsDiv.innerHTML = (data.top_artists || []).slice(0, 20).map(a => `<div class="chip">${a}</div>`).join("");
+    
+    const genresDiv = document.getElementById("topGenresList");
+    genresDiv.innerHTML = (data.top_genres || []).slice(0, 10).map(g => `<span class="chip" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #6ee7b7;">${g}</span>`).join("");
+  } catch (e) {
+    console.error("Error loading user profile:", e);
+  }
+}
+
+async function onPreferenceChange() {
+  const pace = document.getElementById("walkingPace").value;
+  const diet = document.getElementById("dietPref").value;
+  
+  await fetch("/api/save-profile", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ user_id: "alicechang94", walking_pace: pace, diet_pref: diet })
+  });
+
+  const notice = document.getElementById("prefSaveNotice");
+  notice.style.display = "block";
+  setTimeout(() => { notice.style.display = "none"; }, 3000);
+
+  await generateSchedule();
+}
+
+async function saveCustomArtists() {
+  const text = document.getElementById("customArtistsInput").value;
+  if (!text.trim()) return;
+  const pace = document.getElementById("walkingPace").value;
+  const diet = document.getElementById("dietPref").value;
+
+  await fetch("/api/save-profile", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ artists: text, user_id: "alicechang94", walking_pace: pace, diet_pref: diet })
+  });
+  document.getElementById("customArtistsInput").value = "";
+  await loadUserProfile();
+  await generateSchedule();
+  alert("Added artists to your taste profile!");
+}
+
+async function playAudioPreview(artist) {
+  const card = document.getElementById("audioPlayerCard");
+  const audio = document.getElementById("audioElem");
+  const title = document.getElementById("playerTitle");
+  const art = document.getElementById("playerArtist");
+  const img = document.getElementById("playerArt");
+  
+  title.textContent = "Loading preview...";
+  art.textContent = artist;
+  card.style.display = "flex";
+
+  try {
+    const res = await fetch(`/api/preview-track?artist=${encodeURIComponent(artist)}`);
+    const data = await res.json();
+    if (data.preview_url) {
+      title.textContent = data.track_name || "Audio Preview";
+      art.textContent = `${artist} (${data.release_year || 'Preview'})`;
+      img.src = data.artwork_url || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&h=100&fit=crop";
+      audio.src = data.preview_url;
+      audio.play();
+    } else {
+      title.textContent = "Preview unavailable";
+    }
+  } catch (e) {
+    title.textContent = "Preview error";
+  }
+}
+
+function closeAudioPlayer() {
+  const audio = document.getElementById("audioElem");
+  audio.pause();
+  document.getElementById("audioPlayerCard").style.display = "none";
+}
+
+function openSwapModal(idx, currentArtist) {
+  targetSwapIndex = idx;
+  const overlay = document.getElementById("swapOverlay");
+  const list = document.getElementById("swapCandidateList");
+  const sub = document.getElementById("swapSubtitle");
+  list.innerHTML = "";
+
+  if (!currentScheduleData || !currentScheduleData.day_lineup) return;
+  const dayLineup = currentScheduleData.day_lineup;
+  const alternatives = dayLineup.filter(act => act.artist !== currentArtist);
+
+  sub.textContent = `Swap "${currentArtist}" with any alternative playing today:`;
+
+  alternatives.forEach(alt => {
+    const item = document.createElement("div");
+    item.className = "swap-item";
+    item.innerHTML = `
+      <div>
+        <div style="font-weight: 700; color: #fff; font-size: 0.85rem;">${alt.artist}</div>
+        <div style="font-size: 0.72rem; color: #a5b4fc;">${alt.stage} • ${alt.start_time} - ${alt.end_time}</div>
+      </div>
+      <button class="act-btn" style="flex: none; background: rgba(99, 102, 241, 0.4); border-color: #818cf8; color: #fff; padding: 0.3rem 0.55rem;">
+        Select
+      </button>
+    `;
+    item.onclick = () => selectAlternativeAct(alt);
+    list.appendChild(item);
+  });
+
+  overlay.style.display = "flex";
+}
+
+function closeSwapModal() {
+  document.getElementById("swapOverlay").style.display = "none";
+}
+
+function selectAlternativeAct(newAct) {
+  if (targetSwapIndex === null || !currentScheduleData) return;
+  const item = currentScheduleData.timeline[targetSwapIndex];
+  
+  const stagesCoords = (currentScheduleData.geo_data && currentScheduleData.geo_data.stages) ? currentScheduleData.geo_data.stages : {};
+  const stageGeo = stagesCoords[newAct.stage] || { lat: item.lat, lon: item.lon };
+
+  item.artist = newAct.artist;
+  item.stage = newAct.stage;
+  item.start_time = newAct.start_time;
+  item.end_time = newAct.end_time;
+  item.genres = newAct.genres || [];
+  item.category = "discovery";
+  item.tag = "✨ Handpicked Alternative";
+  item.reason = `Swapped in from ${currentScheduleData.selected_day} lineup (${newAct.genres.join(", ")}).`;
+  item.lat = stageGeo.lat;
+  item.lon = stageGeo.lon;
+
+  closeSwapModal();
+  renderTimeline(currentScheduleData.timeline);
+  renderDiscoveryCards(currentScheduleData.timeline);
+  plotMapRoutes(currentScheduleData);
+}
+
+async function generateSchedule() {
+  const btn = document.getElementById("btnOptimize");
+  const btnText = document.getElementById("btnOptimizeText");
+  btnText.textContent = "...";
+  btn.style.opacity = "0.7";
+
+  try {
+    const festSelect = document.getElementById("festivalSelect");
+    const festId = festSelect ? festSelect.value : "capitol_hill_block_party_2026";
+    const daySelect = document.getElementById("daySelect");
+    const day = daySelect ? daySelect.value : "Friday (Day 1)";
+    const paceSelect = document.getElementById("walkingPace");
+    const pace = paceSelect ? paceSelect.value : "Moderate";
+    const dietSelect = document.getElementById("dietPref");
+    const diet = dietSelect ? dietSelect.value : "Casual & Quick Bites";
+    
+    const res = await fetch("/api/generate-schedule", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ festival_id: festId, selected_day: day, user_id: "alicechang94", pacing: pace, diet_pref: diet })
+    });
+
+    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+
+    const data = await res.json();
+    currentScheduleData = data;
+    
+    const weatherBox = document.getElementById("weatherContent");
+    const w = data.festival.weather || {};
+    weatherBox.innerHTML = `
+      <strong>Day:</strong> ${data.selected_day}<br>
+      <strong>Conditions:</strong> ${w.afternoon || 'Warm'} &bull; ${w.evening || 'Cool'}<br>
+      <strong>Pace:</strong> ${pace} with ${diet}.
+    `;
+    
+    renderTimeline(data.timeline);
+    renderDiscoveryCards(data.timeline);
+    plotMapRoutes(data);
+  } catch (err) {
+    console.error("Error generating schedule:", err);
+  } finally {
+    btnText.textContent = "Optimize";
+    btn.style.opacity = "1";
+  }
+}
+
+function renderTimeline(timeline) {
+  const list = document.getElementById("timelineList");
+  list.innerHTML = "";
+  
+  timeline.forEach((item, idx) => {
+    if (item.type === "transit") {
+      const el = document.createElement("div");
+      el.className = "transit-step";
+      el.innerHTML = `
+        <span class="material-symbols-outlined" style="font-size: 1rem;">directions_walk</span>
+        <span><strong>${item.duration_mins}m walk:</strong> ${item.from_stage} &rarr; ${item.to_stage}</span>
+      `;
+      list.appendChild(el);
+    } else if (item.type === "break") {
+      const el = document.createElement("div");
+      el.className = "break-step";
+      el.onclick = () => {
+        switchScreen('map');
+        if (leafletMap && item.lat && item.lon) {
+          leafletMap.flyTo([item.lat, item.lon], 18, { duration: 1 });
+        }
+      };
+      el.innerHTML = `
+        <span class="material-symbols-outlined" style="font-size: 1.2rem; color: #34d399;">restaurant</span>
+        <div>
+          <strong style="font-size: 0.82rem; color: #a7f3d0;">${item.title}</strong>
+          <div style="font-size: 0.72rem; color: #6ee7b7; margin-top: 2px;">${item.note}</div>
+        </div>
+      `;
+      list.appendChild(el);
+    } else {
+      const el = document.createElement("div");
+      el.className = `schedule-item ${item.category}`;
+      
+      el.innerHTML = `
+        <div onclick="goToMapSet(${item.lat}, ${item.lon})" style="cursor: pointer;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.2rem;">
+            <strong style="font-size: 0.92rem; color: #fff;">${item.artist}</strong>
+            <span style="font-size: 0.74rem; font-weight: 600; color: #94a3b8;">${item.start_time} - ${item.end_time}</span>
+          </div>
+          <div style="font-size: 0.76rem; color: #cbd5e1; display: flex; align-items: center; gap: 0.3rem;">
+            <span class="material-symbols-outlined" style="font-size: 0.9rem; color: #818cf8;">location_on</span>
+            ${item.stage}
+          </div>
+          <div style="font-size: 0.7rem; font-weight: 600; color: ${item.category === 'must_see' ? '#fca5a5' : '#6ee7b7'}; margin-top: 0.2rem;">
+            ${item.tag}
+          </div>
+        </div>
+        
+        <div class="act-actions">
+          <button class="act-btn" onclick="playAudioPreview('${item.artist.replace(/'/g, "\\'")}')">
+            <span class="material-symbols-outlined" style="font-size: 13px; color: #38bdf8;">play_circle</span>
+            Preview
+          </button>
+          <button class="act-btn" onclick="openSwapModal(${idx}, '${item.artist.replace(/'/g, "\\'")}')">
+            <span class="material-symbols-outlined" style="font-size: 13px; color: #c084fc;">swap_horiz</span>
+            Swap Act
+          </button>
+        </div>
+      `;
+      list.appendChild(el);
+    }
+  });
+}
+
+function goToMapSet(lat, lon) {
+  switchScreen('map');
+  if (leafletMap && lat && lon) {
+    leafletMap.flyTo([lat, lon], 18, { duration: 1 });
+  }
+}
+
+function renderDiscoveryCards(timeline) {
+  const discList = document.getElementById("discoveryCardsList");
+  discList.innerHTML = "";
+  
+  const discoveryActs = timeline.filter(t => t.type === "performance" && t.category === "discovery");
+  if (!discoveryActs.length) {
+    discList.innerHTML = `<div style="color: var(--text-muted); font-size: 0.8rem;">All acts on your current path are direct favorites!</div>`;
+    return;
+  }
+
+  discoveryActs.forEach(act => {
+    const card = document.createElement("div");
+    card.className = "schedule-item discovery";
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.92rem; font-weight: 700; color: #6ee7b7;">${act.artist}</span>
+        <span style="font-size: 0.72rem; color: #94a3b8;">${act.stage} (${act.start_time})</span>
+      </div>
+      <div style="font-size: 0.74rem; color: #cbd5e1;"><strong>Matched Genres:</strong> ${act.genres.join(", ")}</div>
+      <div style="font-size: 0.72rem; color: #94a3b8;">${act.reason}</div>
+      <div class="act-actions">
+        <button class="act-btn" onclick="playAudioPreview('${act.artist.replace(/'/g, "\\'")}')">
+          <span class="material-symbols-outlined" style="font-size: 13px; color: #38bdf8;">play_circle</span>
+          Preview Song
+        </button>
+      </div>
+    `;
+    discList.appendChild(card);
+  });
+}
+
+function plotMapRoutes(data) {
+  if (!leafletMap || !data || !data.geo_data) return;
+  const geo = data.geo_data;
+  
+  if (geo.center) {
+    leafletMap.setView(geo.center, geo.zoom || 16);
+  }
+
+  markersLayer.clearLayers();
+  routePolylines.forEach(p => leafletMap.removeLayer(p));
+  routePolylines = [];
+
+  (geo.amenities || []).forEach(am => {
+    const iconHtml = `<div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.5);">
+      <span class="material-symbols-outlined" style="font-size: 16px; color: ${am.type === 'water' ? '#38bdf8' : (am.type === 'food' ? '#f59e0b' : '#a855f7')};">${am.icon}</span>
+    </div>`;
+    const icon = L.divIcon({ html: iconHtml, className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
+    L.marker([am.lat, am.lon], { icon }).addTo(markersLayer).bindPopup(`<strong>${am.name}</strong>`);
+  });
+
+  const stages = geo.stages || {};
+  for (const [stageName, s] of Object.entries(stages)) {
+    const actsOnStage = (data.timeline || []).filter(t => t.type === 'performance' && t.stage === stageName);
+    let category = actsOnStage.length ? actsOnStage[0].category : 'standard';
+
+    const stageIconHtml = `<div class="custom-stage-marker ${category}" style="width: 32px; height: 32px; font-size: 11px;">
+      <span class="material-symbols-outlined" style="font-size: 18px;">theater_comedy</span>
+    </div>`;
+    const icon = L.divIcon({ html: stageIconHtml, className: '', iconSize: [32, 32], iconAnchor: [16, 16] });
+    
+    let popupContent = `<div style="color: #0f172a; font-family: sans-serif;">
+      <strong style="font-size: 13px;">${stageName}</strong><br>
+      <span style="font-size: 11px; color: #475569;">${s.desc || ''}</span>`;
+    if (actsOnStage.length) {
+      popupContent += `<hr style="margin: 4px 0; border: none; border-top: 1px solid #e2e8f0;">
+      <strong style="font-size: 11px;">Sets (${data.selected_day || 'Today'}):</strong><br>`;
+      actsOnStage.forEach(a => {
+        popupContent += `<span style="font-size: 11px;">• <strong>${a.artist}</strong> (${a.start_time} - ${a.end_time})</span><br>`;
+      });
+    }
+    popupContent += `</div>`;
+
+    L.marker([s.lat, s.lon], { icon }).addTo(markersLayer).bindPopup(popupContent);
+  }
+
+  const transitSteps = (data.timeline || []).filter(t => t.type === 'transit');
+  transitSteps.forEach(ts => {
+    if (ts.start_coords && ts.end_coords) {
+      const line = L.polyline([ts.start_coords, ts.end_coords], {
+        color: '#f59e0b',
+        weight: 4,
+        dashArray: '8, 8',
+        opacity: 0.85
+      }).addTo(leafletMap);
+      line.bindTooltip(`${ts.duration_mins}m walk: ${ts.from_stage} &rarr; ${ts.to_stage}`, { sticky: true });
+      routePolylines.push(line);
+    }
+  });
+}
+
+initMap();
+loadFestivalsMetadata();
+loadUserProfile().then(() => {
+  generateSchedule();
+  // Check for specific demo action param
+  const urlParams = new URLSearchParams(window.location.search);
+  const action = urlParams.get('action');
+  if (action === 'sat') {
+    setTimeout(() => switchMapLayer('satellite'), 800);
+  } else if (action === 'timeline') {
+    setTimeout(() => switchScreen('timeline'), 800);
+  } else if (action === 'preview') {
+    setTimeout(() => {
+      switchScreen('timeline');
+      playAudioPreview('Anderson .Paak');
+    }, 800);
+  } else if (action === 'swap') {
+    setTimeout(() => {
+      openSwapModal(0, 'Anderson .Paak');
+    }, 800);
+  } else if (action === 'discovery') {
+    setTimeout(() => switchScreen('discovery'), 800);
+  } else if (action === 'profile') {
+    setTimeout(() => switchScreen('profile'), 800);
+  } else if (action === 'poster') {
+    setTimeout(() => showPoster(), 800);
+  }
+});
+</script>
+<script src="/demo_tour.js"></script>
+</body>
+</html>

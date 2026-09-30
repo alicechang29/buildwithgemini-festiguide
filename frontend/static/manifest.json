@@ -1,0 +1,17 @@
+{
+  "name": "FestiGuide - Visual Festival Planner",
+  "short_name": "FestiGuide",
+  "description": "Interactive festival stage routing, personal artist schedule, and live map navigation.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://api.iconify.design/material-symbols:festival-rounded.svg?color=%23818cf8",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
