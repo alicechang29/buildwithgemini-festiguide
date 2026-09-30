@@ -51,11 +51,15 @@ Music festivals are exhilarating, but planning them can be overwhelming: overlap
 
 ---
 
-## 🎥 Video Walkthrough
+## 🎥 Demo Video Walkthrough
 
-A complete 1-minute narrated walkthrough demo showcasing the mobile app, map routing, audio previews, and alternative artist picker is included in this repository:
+<div align="center">
 
-👉 **[`festiguide_demo.mp4`](festiguide_demo.mp4)**
+![FestiGuide Walkthrough Preview](docs/images/festiguide_demo.gif)
+
+**▶️ Full 1-minute narrated video walkthrough:** [Download or Watch `festiguide_demo.mp4`](festiguide_demo.mp4)
+
+</div>
 
 ---
 
